@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -16,6 +17,9 @@ namespace BepInEx.Preloader
 		public static void Main(string[] args)
 		{
 			Paths.SetExecutablePath(args[0]);
+
+            ChainDoorstop(Paths.DoorstopPluginPath, args);
+
 			AppDomain.CurrentDomain.AssemblyResolve += LocalResolve;
 
 			Preloader.Run();
@@ -48,5 +52,29 @@ namespace BepInEx.Preloader
 
 			return null;
 		}
+
+        private static void ChainDoorstop(string directory, string[] args)
+        {
+            if (!Directory.Exists(directory))
+                return;
+
+            foreach (string assemblyPath in Directory.GetFiles(directory, "*.dll"))
+                try
+                {
+                    var assembly = Assembly.LoadFrom(assemblyPath);
+
+                    var entryPoint = assembly.EntryPoint ?? assembly.GetExportedTypes().Where(type => !type.IsGenericType).SelectMany(type =>
+                                             type.GetMethods().Where(method =>
+                                                 method.IsStatic && method.Name == "Main" && (method.GetParameters().Length == 0 ||
+                                                                                              method.GetParameters().Length == 1 && method.GetParameters()[0].ParameterType == typeof(string[]))))
+                                         .FirstOrDefault();
+
+                    if (entryPoint == null) continue;
+
+                    entryPoint.Invoke(null, entryPoint.GetParameters().Length == 0 ? null : new object[] {args});
+                }
+                catch (BadImageFormatException) { } //unmanaged DLL
+                catch (ReflectionTypeLoadException) { } //invalid references
+        }
 	}
 }

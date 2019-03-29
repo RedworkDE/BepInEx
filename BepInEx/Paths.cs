@@ -17,6 +17,7 @@ namespace BepInEx
 			BepInExRootPath = Utility.CombinePaths(GameRootPath, "BepInEx");
 			PluginPath = Utility.CombinePaths(BepInExRootPath, "plugins");
 			PatcherPluginPath = Utility.CombinePaths(BepInExRootPath, "patchers");
+			DoorstopPluginPath = Utility.CombinePaths(BepInExRootPath, "doorstop");
 			BepInExAssemblyDirectory = Utility.CombinePaths(BepInExRootPath, "core");
 			BepInExAssemblyPath = Utility.CombinePaths(BepInExAssemblyDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.dll");
 		}
@@ -56,18 +57,23 @@ namespace BepInEx
 		/// </summary>
 		public static string ManagedPath { get; private set; }
 
-		/// <summary>
-		///     The path to the patcher plugin folder which resides in the BepInEx folder.
-		/// </summary>
-		public static string PatcherPluginPath { get; private set; }
+        /// <summary>
+        ///     The path to the patcher plugin folder which resides in the BepInEx folder.
+        /// </summary>
+        public static string PatcherPluginPath { get; private set; }
 
-		/// <summary>
-		///     The path to the plugin folder which resides in the BepInEx folder.
-		/// <para>
-		///		This is ONLY guaranteed to be set correctly when Chainloader has been initialized.
-		/// </para>
-		/// </summary>
-		public static string PluginPath { get; private set; }
+        /// <summary>
+        ///     The path to the patcher plugin folder which resides in the BepInEx folder.
+        /// </summary>
+        public static string DoorstopPluginPath { get; private set; }
+
+        /// <summary>
+        ///     The path to the plugin folder which resides in the BepInEx folder.
+        /// <para>
+        ///		This is ONLY guaranteed to be set correctly when Chainloader has been initialized.
+        /// </para>
+        /// </summary>
+        public static string PluginPath { get; private set; }
 
 		/// <summary>
 		///     The name of the currently executing process.
